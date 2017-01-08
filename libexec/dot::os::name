@@ -1,0 +1,10 @@
+os_uname="$(uname | tr '[:upper:]' '[:lower:]')"
+
+case "$os_uname" in
+  darwin)
+    echo mac
+    ;;
+  *)
+    echo "$os_uname"
+    ;;
+esac

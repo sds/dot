@@ -1,0 +1,39 @@
+# Loads Dot runtime for a user running the Z Shell, running plugin scripts
+# for a "login" shell.
+#
+# Your ~/.zlogin should be a symlink to this file.
+#
+# Do not make changes to this file -- use Dot plugins!
+
+__file__="$HOME/.zlogin"
+
+if [ ! -L "$__file__" ]; then
+  echo "ERROR: $__file__ must be a symlink to lib/shells/zsh/zlogin in the Dot framework"
+  echo "ERROR: You should not execute or source this script directly!"
+  echo "ERROR: Skipping initialization of Dot"
+else
+  for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER; do
+    # Define variable so plugin's login shell scripts can use it for convenience
+    DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
+
+    if ! dot::plugin::platform_supported "$plugin"; then
+      continue
+    fi
+
+    # Load any environment variables defined in relevant `env` directories
+    for env_path in "$DOT_PLUGIN_DIR/env/login/"*(N); do
+      if [ -f "$env_path" ]; then
+        if ! load_env "$env_path"; then
+          echo "ERROR: Failed to load environment variables $env_path for plugin $plugin. Halting"
+          exit 1
+        fi
+      fi
+    done
+
+    for script in "$DOT_PLUGIN_DIR/lib/login/"*".${DOT_SHELL}"(N); do
+      if ! source "$script"; then
+        echo "ERROR: Problem sourcing login script $script for plugin $plugin"
+      fi
+    done
+  done
+fi

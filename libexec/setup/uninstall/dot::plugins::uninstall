@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+# Uninstalls a list of Dot plugins in the order specified.
+
+set -o errexit
+set -o nounset
+
+rm -rf "$DOT_PATH_DIR"
+
+for plugin in "$@"; do
+  if ! dot::plugin::platform_supported "$plugin"; then
+    continue # Filter plugins that don't support the current OS
+  fi
+
+  plugin_dir="$DOT_PLUGINS_DIR/$plugin"
+
+  # Add anything in `libexec` directories to PATH so they can be executed by
+  # this plugin or other plugins during install
+  for libexec_path in "$plugin_dir/libexec"{,/setup{,/uninstall}}; do
+    if [ -d "$libexec_path" ]; then
+      export PATH="$libexec_path:$PATH"
+    fi
+  done
+
+  # Load any environment variables defined in relevant `env` directories
+  for env_path in "$plugin_dir/env"{,/setup{,/uninstall}}"/"*; do
+    if [ -f "$env_path" ]; then
+      load_env "$env_path"
+    fi
+  done
+
+  if ! dot::plugin::uninstall "$plugin"; then
+    echo "ERROR: Failed to uninstall plugin $plugin. Halting"
+    exit 1
+  fi
+done

@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Executed when installing Dot for the Z shell
+
+fish_conf_dir="$HOME/.config/fish"
+
+mkdir -p "$fish_conf_dir"
+
+dot::symlink "$fish_conf_dir/config.fish" "$DOT_FRAMEWORK_DIR/lib/shells/fish/config.fish"

@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+# Loads plugin dependency graph and returns order that plugins should be
+# installed/loaded.
+
+set -o errexit
+set -o nounset
+
+dependencies="$(mktemp)"
+independent_plugins="$(mktemp)"
+
+for plugin_dir in $(find "$DOT_PLUGINS_DIR" -maxdepth 1 -type d); do
+  plugin_name="$(basename "$plugin_dir")"
+
+  if [ -e "$plugin_dir/dependencies" ]; then
+    # Add dependencies to list of edges
+    cat "$plugin_dir/dependencies" | xargs -n1 -I{} echo {} "$plugin_name" >> "$dependencies"
+  else
+    echo "$plugin_name" >> "$independent_plugins"
+  fi
+done
+
+# Output the dependent plugins sorted topologically, then everything else
+tsort "$dependencies"
+cat "$independent_plugins"
+rm "$dependencies" "$independent_plugins" >/dev/null 2>&1

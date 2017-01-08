@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Returns whether we are "installing" Dot (as opposed to uninstalling).
+#
+# Should be used only by installation-related functions.
+
+set -o errexit
+set -o nounset
+
+[ "$DOT_INSTALL_TYPE" = install ]

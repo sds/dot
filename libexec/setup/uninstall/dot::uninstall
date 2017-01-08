@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+# Uninstalls all Dot plugins.
+
+set -o errexit
+set -o nounset
+
+export DOT_INSTALL_TYPE=uninstall
+
+# Install specific plugins if they are specified
+if [ $# -gt 0 ]; then
+  dot::plugins::uninstall "$@"
+else
+  dot::plugins::uninstall $(dot::plugins::dependency_order | dot::reverse)
+
+  # Remove symlinks to startup files
+  "$DOT_FRAMEWORK_DIR/libexec/shells/$DOT_SHELL/setup"
+fi
+

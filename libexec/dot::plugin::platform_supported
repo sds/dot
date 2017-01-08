@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+# Returns whether the given plugin supports the _current_ operating system.
+
+set -o errexit
+set -o nounset
+
+plugin_name="$1"
+plugin_dir="$DOT_PLUGINS_DIR/$plugin_name"
+
+# If platform constraints are specified, ensure the current platform is listed
+if [ -f "$plugin_dir/platforms" ]; then
+  grep "^$(dot::os::name)\$" "$plugin_dir/platforms" >/dev/null 2>&1
+fi
+

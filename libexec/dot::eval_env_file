@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Evaluates an environment file and outputs variable names and interpolated
+# values.
+#
+# This is used so we provide a consistent way to _evaluate_ environment files,
+# but allow different shells to load the resulting name/value pairs using
+# their shell-specific syntax.
+
+prev_env_file="$(mktemp)"
+new_env_file="$(mktemp)"
+
+env | sort > "$prev_env_file"
+. "$1" # Source the file to load defined environment variables
+env | sort > "$new_env_file"
+
+comm -3 "$prev_env_file" "$new_env_file" | sed 's|^[[:blank:]]*||g'

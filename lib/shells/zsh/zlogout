@@ -1,0 +1,29 @@
+# Loads Dot runtime for a user running the Z Shell, running plugin scripts when
+# logging out of a login shell.
+#
+# Your ~/.zlogout should be a symlink to this file.
+#
+# Do not make changes to this file -- use Dot plugins!
+
+__file__="$HOME/.zlogout"
+
+if [ ! -L "$__file__" ]; then
+  echo "ERROR: $__file__ must be a symlink to lib/shells/zsh/zlogout in the Dot framework"
+  echo "ERROR: You should not execute or source this script directly!"
+  echo "ERROR: Skipping initialization of Dot"
+else
+  for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER; do
+    # Define variable so plugin's logout shell scripts can use it for convenience
+    DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
+
+    if ! dot::plugin::platform_supported "$plugin"; then
+      continue
+    fi
+
+    for script in "$DOT_PLUGIN_DIR/lib/logout/"*".${DOT_SHELL}"(N); do
+      if ! source "$script"; then
+        echo "ERROR: Problem sourcing logout script $script for plugin $plugin"
+      fi
+    done
+  done
+fi

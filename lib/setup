@@ -1,0 +1,18 @@
+if [ -z "${HOME:+x}" ]; then
+  echo "ERROR: HOME environment variable not defined!"
+  exit 1
+fi
+
+if [ -z "${SHELL:+x}" ]; then
+  echo "ERROR: SHELL environment variable not defined!"
+  exit 1
+fi
+
+export DOT_SHELL="$(basename "$SHELL")"
+export DOT_BACKUPS_DIR="$DOT_HOME/.backups"
+export DOT_PLUGINS_DIR="$DOT_HOME/plugins"
+export DOT_PATH_DIR="$DOT_HOME/.path"
+
+export PATH="$DOT_FRAMEWORK_DIR/libexec:$PATH"
+export PATH="$DOT_FRAMEWORK_DIR/libexec/setup:$PATH"
+export PATH="$DOT_PATH_DIR:$PATH"

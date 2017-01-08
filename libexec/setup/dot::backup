@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Stores a copy of the specified file in the backup directory.
+#
+# The file can be restored by running calling the mirror `restore` function.
+
+set -o errexit
+set -o nounset
+
+file="$1"
+backup_file="$DOT_BACKUPS_DIR/${file}.bak"
+
+if [ -e "$backup_file" ]; then
+  # Warn user if backup file already exists and is different
+  if ! diff "$backup_file" "$file"; then
+    read -p "Backup '$backup_file' for already exists and differs from '$file'. Overwrite? (y/n) "
+    [ "$REPLY" == "n" ] && exit
+  fi
+else
+  # Ensure backup directory exists
+  mkdir -p "$(dirname "$backup_file")"
+fi
+
+cp -r "$file" "$backup_file"

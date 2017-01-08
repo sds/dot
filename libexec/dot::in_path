@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Returns whether the specified execute is in the $PATH and executable.
+
+command -v "$1" >/dev/null 2>&1

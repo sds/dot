@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+# Executed when installing Dot for the Z shell
+
+dot::symlink "$HOME/.zshenv" "$DOT_FRAMEWORK_DIR/lib/shells/zsh/zshenv"
+dot::symlink "$HOME/.zshrc" "$DOT_FRAMEWORK_DIR/lib/shells/zsh/zshrc"
+dot::symlink "$HOME/.zlogin" "$DOT_FRAMEWORK_DIR/lib/shells/zsh/zlogin"
+dot::symlink "$HOME/.zlogout" "$DOT_FRAMEWORK_DIR/lib/shells/zsh/zlogout"

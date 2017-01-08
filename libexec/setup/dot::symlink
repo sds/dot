@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+# Declarative syntax for specifying that a symlink should be created for plugin
+
+set -o errexit
+set -o nounset
+
+target_file="$1" # Location to place the symlink
+source_file="$2" # File to point symlink to
+
+if dot::installing; then
+  mkdir -p "$(dirname "$target_file")"
+
+  if [ -e "$target_file" ]; then
+    if [ "$(readlink $target_file)" = "$source_file" ]; then
+      exit
+    fi
+    dot::backup "$target_file" && rm -rf "$target_file"
+  fi
+
+  ln -sf "$source_file" "$target_file"
+else
+  if [ -L "$target_file" ]; then
+    rm "$target_file"
+  elif [ -e "$target_file" ]; then
+    echo "Can't remove '$target_file' since it is not a symbolic link"
+  fi
+
+  dot::restore "$target_file"
+fi

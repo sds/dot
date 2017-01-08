@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+# Restores a file from the backup directory to its original location.
+
+set -o errexit
+set -o nounset
+
+file="$1"
+backup_file="$DOT_BACKUPS_DIR/${file}.bak"
+
+if [ -e "$backup_file" ]; then
+  if [ -e "$file" ]; then
+    rm -f "$file"
+  fi
+
+  echo "Restoring file '$file' from '$backup_file'"
+  mv "$backup_file" "$file"
+fi

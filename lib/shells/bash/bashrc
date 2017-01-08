@@ -1,0 +1,54 @@
+# Loads Dot runtime for a user running the Bash shell, running plugin scripts
+# for an "interactive" shell.
+#
+# Your ~/.bashrc should be a symlink to this file.
+#
+# Do not make changes to this file -- use Dot plugins!
+
+if [ ! -L "$0" ]; then
+  echo "ERROR: $0 must be a symlink to lib/shells/bash/bashrc in the Dot framework"
+  echo "ERROR: You should not execute or source this script directly!"
+  echo "ERROR: Skipping initialization of Dot"
+else
+  export DOT_FRAMEWORK_DIR="$(cd "$(dirname "$(dirname "$(dirname "$(dirname "$(readlink "$0")")")")")" && pwd)"
+  export DOT_HOME="$(dirname "$(readlink "$DOT_FRAMEWORK_DIR")")"
+
+  export DOT_SHELL=bash
+  export DOT_BACKUPS_DIR="$DOT_HOME/.backups"
+  export DOT_PLUGINS_DIR="$DOT_HOME/plugins"
+  export DOT_PATH_DIR="$DOT_HOME/.path"
+
+  export PATH="$DOT_FRAMEWORK_DIR/libexec:$PATH"
+  export PATH="$DOT_PATH_DIR:$PATH"
+
+  source "$DOT_FRAMEWORK_DIR/lib/shells/bash/load_env"
+
+  for plugin in $(dot::plugins::dependency_order); do
+    if ! dot::plugin::platform_supported "$plugin"; then
+      continue
+    fi
+
+    # Define variable so plugin's interactive shell script can use it for convenience
+    DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
+
+    if ! shopt -q login_shell; then
+      # Skip if login shell since we already did it in bash_login
+
+      # Load any environment variables defined in relevant `env` directories
+      for env_path in "$DOT_PLUGIN_DIR/env"{,/setup{,/install}}"/"*(N); do
+        if [ -f "$env_path" ]; then
+          if ! load_env "$env_path"; then
+            echo "ERROR: Failed to load environment variables for plugin $plugin. Halting"
+            exit 1
+          fi
+        fi
+      done
+    fi
+
+    for script in "$DOT_PLUGIN_DIR/lib/interactive/"*".${DOT_SHELL}"; do
+      if ! source "$script"; then
+        echo "ERROR: Problem sourcing interactive script $script for plugin $plugin"
+      fi
+    done
+  done
+fi

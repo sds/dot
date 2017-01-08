@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+# Specify a file to be created.
+#
+# The file contents are passed in via STDIN, so callers can use Heredoc syntax
+# to make convenient inline file templates.
+
+set -o errexit
+set -o nounset
+
+file="$1"
+tmp_file="$(mktemp)"
+
+if dot::installing; then
+  # `file` will be passed file contents via STDIN
+  while read data; do
+    echo "$data" >> "$tmp_file"
+  done
+
+  # Backup previously existing file unless it has the exact same contents
+  # (as that likely means we've previously installed and are installing again)
+  if [ -e "$file" ]; then
+    if diff "$tmp_file" "$file" >/dev/null; then
+      dot::backup "$file"
+    fi
+  fi
+
+  mv "$tmp_file" "$file"
+else
+  if [ -e "$file" ]; then
+    rm -f "$file"
+  fi
+
+  dot::restore "$file"
+fi

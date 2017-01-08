@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Installs Dot for the user's current shell (e.g. bash, zsh, fish).
+#
+# The `sh` executable found in the user's path used to execute this script
+# MUST be a POSIX-compliant shell.
+
+export DOT_HOME="$(cd "$(dirname "$(dirname "$0")")" && pwd)"
+export DOT_FRAMEWORK_DIR="${DOT_FRAMEWORK_DIR:-$DOT_HOME/framework}"
+
+. "$DOT_FRAMEWORK_DIR/lib/install"
+
+dot::install "$@"

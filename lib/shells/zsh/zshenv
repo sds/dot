@@ -1,0 +1,56 @@
+# Loads Dot runtime for a user running the Z Shell, running plugin scripts
+# for all shell contexts (login, interactive, or neither).
+#
+# Your ~/.zshenv should be a symlink to this file.
+#
+# Do not make changes to this file -- use Dot plugins!
+
+__file__="$HOME/.zshenv"
+
+if [ ! -L "$__file__" ]; then
+  echo "ERROR: $__file__ must be a symlink to lib/shells/zsh/zshenv in the Dot framework"
+  echo "ERROR: You should not execute or source this script directly!"
+  echo "ERROR: Skipping initialization of Dot"
+else
+  export DOT_FRAMEWORK_DIR="$(cd "$(dirname "$(dirname "$(dirname "$(dirname "$(readlink "$__file__")")")")")" && pwd)"
+  export DOT_HOME="$(dirname "$DOT_FRAMEWORK_DIR")"
+
+  export DOT_SHELL=zsh
+  export DOT_BACKUPS_DIR="$DOT_HOME/.backups"
+  export DOT_PLUGINS_DIR="$DOT_HOME/plugins"
+  export DOT_PATH_DIR="$DOT_HOME/.path"
+
+  export PATH="$DOT_FRAMEWORK_DIR/libexec:$PATH"
+  export PATH="$DOT_PATH_DIR:$PATH"
+
+  source "$DOT_FRAMEWORK_DIR/lib/shells/zsh/load_env"
+
+  # Calculate this once and cache so we don't recalculate for each startup file
+  # (zlogin, zshrc, etc.)
+  DOT_PLUGINS_DEPENDENCY_ORDER=($(dot::plugins::dependency_order))
+
+  for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER; do
+    # Define variable so plugin's login shell scripts can use it for convenience
+    DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
+
+    if ! dot::plugin::platform_supported "$plugin"; then
+      continue
+    fi
+
+    # Load any environment variables defined in relevant `env` directories
+    for env_path in "$DOT_PLUGIN_DIR/env/"*(N); do
+      if [ -f "$env_path" ]; then
+        if ! load_env "$env_path"; then
+          echo "ERROR: Failed to load environment variables $env_path for plugin $plugin. Halting"
+          exit 1
+        fi
+      fi
+    done
+
+    for script in "$DOT_PLUGIN_DIR/lib/"*".${DOT_SHELL}"(N); do
+      if ! source "$script"; then
+        echo "ERROR: Problem sourcing script $script for plugin $plugin"
+      fi
+    done
+  done
+fi

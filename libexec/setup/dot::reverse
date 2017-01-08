@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Outputs lines given via standard input in reverse order
+
+sed '1!G;h;$!d'

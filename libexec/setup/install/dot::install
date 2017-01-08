@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+# Installs all Dot plugins.
+
+set -o errexit
+set -o nounset
+
+export DOT_INSTALL_TYPE=install
+
+# Install specific plugins if they are specified
+if [ $# -gt 0 ]; then
+  dot::plugins::install "$@"
+else
+  # Clear path cache so we clean up any unused executables
+  rm -rf "$DOT_PATH_DIR"
+  dot::plugins::install $(dot::plugins::dependency_order)
+fi
+
+# Create symlinks to startup files
+"$DOT_FRAMEWORK_DIR/libexec/shells/$DOT_SHELL/setup"

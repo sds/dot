@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# Clones/fetches a git repository for a plugin, handling both install/uninstall
+# based on context.
+
+set -o errexit
+set -o nounset
+
+repo_url="$1"
+repo_dest="${2:-}" # optional
+commit="${3:-}"    # optional
+
+# Default to current plugin directory if none specified
+if [ -z "$repo_dest" ]; then
+  repo_dest="$DOT_PLUGIN/$(basename -s .git "$repo_url")"
+fi
+
+if dot::installing; then
+  if [ -d "$repo_dest/.git" ]; then
+    # Repo already exists; update it
+    (cd "$repo_dest" && git pull > /dev/null)
+  else
+    git clone "$repo_url" "$repo_dest"
+  fi
+
+  if [ -n "$commit" ]; then
+    (cd "$repo_dest" && git checkout "$commit")
+  fi
+else
+  rm -rf "$repo_dest"
+fi
