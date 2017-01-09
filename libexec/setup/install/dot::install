@@ -7,13 +7,18 @@ set -o nounset
 
 export DOT_INSTALL_TYPE=install
 
+# Cache plugin dependency order so we don't have to calculate it on every
+# startup. This substantially reduces startup time.
+mkdir -p "$DOT_HOME/.cache"
+dot::plugins::dependency_order > "$DOT_HOME/.cache/plugin_load_order"
+
 # Install specific plugins if they are specified
 if [ $# -gt 0 ]; then
   dot::plugins::install "$@"
 else
   # Clear path cache so we clean up any unused executables
   rm -rf "$DOT_PATH_DIR"
-  dot::plugins::install $(dot::plugins::dependency_order)
+  dot::plugins::install $(cat "$DOT_HOME/.cache/plugin_load_order")
 fi
 
 # Create symlinks to startup files

@@ -10,10 +10,6 @@ set -o nounset
 mkdir -p "$DOT_PATH_DIR"
 
 for plugin in "$@"; do
-  if ! dot::plugin::platform_supported "$plugin"; then
-    continue # Filter plugins that don't support the current OS
-  fi
-
   plugin_dir="$DOT_PLUGINS_DIR/$plugin"
 
   # Add anything in `libexec` directories to PATH so they can be executed by

@@ -27,15 +27,11 @@ else
 
   # Calculate this once and cache so we don't recalculate for each startup file
   # (zlogin, zshrc, etc.)
-  DOT_PLUGINS_DEPENDENCY_ORDER=($(dot::plugins::dependency_order))
+  DOT_PLUGINS_DEPENDENCY_ORDER=($(cat "$DOT_HOME/.cache/plugin_load_order"))
 
   for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER; do
     # Define variable so plugin's login shell scripts can use it for convenience
     DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
-
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
 
     # Load any environment variables defined in relevant `env` directories
     for env_path in "$DOT_PLUGIN_DIR/env/"*(N); do

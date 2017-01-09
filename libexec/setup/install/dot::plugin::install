@@ -6,17 +6,16 @@ set -o errexit
 set -o nounset
 
 plugin_name="$1"
-plugin_dir="$DOT_PLUGINS_DIR/$plugin_name"
+export DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin_name"
 
-for bin in "$plugin_dir/"{bin,libexec}"/"*; do
-  if [ -x $bin ]; then
+for bin in "$DOT_PLUGIN_DIR/"{bin,libexec}"/"*; do
+  if [ -x "$bin" ]; then
     ln -fs "$bin" "$DOT_PATH_DIR/$(basename $bin)"
   fi
 done
 
-for install_script_path in "$plugin_dir/setup"{,/install}"/"*; do
+for install_script_path in "$DOT_PLUGIN_DIR/setup"{,/install}"/"*; do
   if [ -f "$install_script_path" ]; then
-    export DOT_PLUGIN_DIR="$plugin_dir"
 
     if [ -x "$install_script_path" ]; then
       "$install_script_path"

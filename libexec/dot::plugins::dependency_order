@@ -12,6 +12,10 @@ independent_plugins="$(mktemp)"
 for plugin_dir in $(find "$DOT_PLUGINS_DIR" -maxdepth 1 -type d); do
   plugin_name="$(basename "$plugin_dir")"
 
+  if ! dot::plugin::platform_supported "$plugin_name"; then
+    continue
+  fi
+
   if [ -e "$plugin_dir/dependencies" ]; then
     # Add dependencies to list of edges
     cat "$plugin_dir/dependencies" | xargs -n1 -I{} echo {} "$plugin_name" >> "$dependencies"

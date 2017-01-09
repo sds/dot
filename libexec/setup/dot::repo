@@ -12,7 +12,7 @@ commit="${3:-}"    # optional
 
 # Default to current plugin directory if none specified
 if [ -z "$repo_dest" ]; then
-  repo_dest="$DOT_PLUGIN/$(basename -s .git "$repo_url")"
+  repo_dest="$DOT_PLUGIN_DIR/$(basename -s .git "$repo_url")"
 fi
 
 if dot::installing; then

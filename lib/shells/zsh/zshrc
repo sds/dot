@@ -16,10 +16,6 @@ else
     # Define variable so plugin's interactive shell script can use it for convenience
     DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
 
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
-
     # Load any environment variables defined in relevant `env` directories
     for env_path in "$DOT_PLUGIN_DIR/env/interactive/"*(N); do
       if [ -f "$env_path" ]; then
