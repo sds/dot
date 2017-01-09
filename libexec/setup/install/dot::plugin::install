@@ -9,7 +9,7 @@ plugin_name="$1"
 export DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin_name"
 
 for bin in "$DOT_PLUGIN_DIR/"{bin,libexec}"/"*; do
-  if [ -x "$bin" ]; then
+  if [ ! -d "$bin" ] && [ -x "$bin" ]; then
     ln -fs "$bin" "$DOT_PATH_DIR/$(basename $bin)"
   fi
 done
