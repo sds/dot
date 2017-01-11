@@ -143,10 +143,10 @@ a shell can run. Some quick definitions:
   a terminal on your machine for the first time).
 
 * **Interactive shell**:
-  A shell is one whose standard input stream is connected to
-  a console/TTY, and thus is able to receive input from a user.
+  A shell whose standard input stream is connected to a console/TTY, and thus
+  is able to receive input from a user.
 
-These definitions are not mutually exclusive---a shell can be both a login
+These definitions are not mutually exclusive--a shell can be both a login
 shell _and_ an interactive shell, one of the two, or neither!
 
 Here are same examples for the `bash` shell (your shell's behavior may be different):
