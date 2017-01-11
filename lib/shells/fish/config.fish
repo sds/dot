@@ -4,8 +4,10 @@
 #
 # Do not make changes to this file -- use Dot plugins!
 
-set -x DOT_FRAMEWORK_DIR (cd (dirname (dirname (dirname (readlink "$0")))); and pwd)
-set -x DOT_HOME (dirname (readlink "$DOT_FRAMEWORK_DIR"))
+set __file__ $HOME/.config/fish/config.fish
+
+set -x DOT_FRAMEWORK_DIR (dirname (dirname (dirname (dirname (readlink $__file__)))))
+set -x DOT_HOME (dirname $DOT_FRAMEWORK_DIR)
 
 set -x DOT_SHELL fish
 set -x DOT_BACKUPS_DIR $DOT_HOME/.backups
@@ -14,31 +16,33 @@ set -x DOT_PATH_DIR $DOT_HOME/.path
 
 set -x PATH $DOT_PATH_DIR $PATH
 
+set DOT_PLUGINS_DEPENDENCY_ORDER (cat $DOT_HOME/.cache/plugin_load_order)
+
 # Filter plugins not supported by the current OS
 set plugins
-for plugin in (dot::plugins::dependency_order)
+for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER
   set plugins $plugins $plugin
 
   set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
   for script in $DOT_PLUGIN_DIR/lib/*.fish
-    if ! source $script
+    if not source $script
       echo "ERROR: Problem sourcing script $script for plugin $plugin_name"
       exit 1
     end
   end
-done
+end
 
 if status --is-login
   for plugin in $plugins
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
 
     for script in $DOT_PLUGIN_DIR/lib/login/*.fish
-      if ! source $script
+      if not source $script
         echo "ERROR: Problem sourcing login script $script for plugin $plugin"
         exit 1
       end
     end
-  done
+  end
 
   # Callback that is executed when shell exits
   function dot::logout --on-process %self
@@ -46,12 +50,12 @@ if status --is-login
       set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
 
       for script in $DOT_PLUGIN_DIR/lib/logout/*.fish
-        if ! source $script
+        if not source $script
           echo "ERROR: Problem sourcing logout script $script for plugin $plugin"
           exit 1
         end
       end
-    done
+    end
   end
 end
 
@@ -60,10 +64,10 @@ if status --is-interactive
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin_name
 
     for script in $DOT_PLUGIN_DIR/lib/interactive/*.fish
-      if ! source $script
+      if not source $script
         echo "ERROR: Problem sourcing interactive script $script for plugin $plugin"
         exit 1
       end
     end
-  done
+  end
 end
