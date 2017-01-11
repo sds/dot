@@ -36,4 +36,8 @@ else
       fi
     done
   done
+
+  if [ -e "$HOME/.zlogin.local" ]; then
+    source "$HOME/.zlogin.local"
+  fi
 fi

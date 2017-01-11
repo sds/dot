@@ -26,4 +26,8 @@ else
       fi
     done
   done
+
+  if [ -e "$HOME/.zlogout.local" ]; then
+    source "$HOME/.zlogout.local"
+  fi
 fi
