@@ -26,5 +26,5 @@ done
 
 # Output the dependent plugins sorted topologically, then everything else
 tsort "$dependencies"
-cat "$independent_plugins"
+cat "$independent_plugins" | awk '!x[$0]++' # awk magic to remove duplicate lines without sorting
 rm "$dependencies" "$independent_plugins" >/dev/null 2>&1
