@@ -14,16 +14,28 @@ set -x DOT_BACKUPS_DIR $DOT_HOME/.backups
 set -x DOT_PLUGINS_DIR $DOT_HOME/plugins
 set -x DOT_PATH_DIR $DOT_HOME/.path
 
+set -x PATH $DOT_FRAMEWORK_DIR/libexec $PATH
 set -x PATH $DOT_PATH_DIR $PATH
 
 set DOT_PLUGINS_DEPENDENCY_ORDER (cat $DOT_HOME/.cache/plugin_load_order)
 
-# Filter plugins not supported by the current OS
+source "$DOT_FRAMEWORK_DIR/lib/shells/fish/load_env"
+
 set plugins
 for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER
   set plugins $plugins $plugin
 
   set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
+
+  for env_path in $DOT_PLUGIN_DIR/env/*
+    if [ -f $env_path ]
+      if not load_env $env_path
+        echo "ERROR: Failed to load environment variables $env_path for plugin $plugin. Halting"
+        exit 1
+      end
+    end
+  end
+
   for script in $DOT_PLUGIN_DIR/lib/*.fish
     if not source $script
       echo "ERROR: Problem sourcing script $script for plugin $plugin_name"
@@ -35,6 +47,15 @@ end
 if status --is-login
   for plugin in $plugins
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
+
+    for env_path in $DOT_PLUGIN_DIR/env/login/*
+      if [ -f $env_path ]
+        if not load_env $env_path
+          echo "ERROR: Failed to load environment variables $env_path for plugin $plugin. Halting"
+          exit 1
+        end
+      end
+    end
 
     for script in $DOT_PLUGIN_DIR/lib/login/*.fish
       if not source $script
@@ -62,6 +83,15 @@ end
 if status --is-interactive
   for plugin in $plugins
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin_name
+
+    for env_path in $DOT_PLUGIN_DIR/env/interactive/*
+      if [ -f $env_path ]
+        if not load_env $env_path
+          echo "ERROR: Failed to load environment variables $env_path for plugin $plugin. Halting"
+          exit 1
+        end
+      end
+    end
 
     for script in $DOT_PLUGIN_DIR/lib/interactive/*.fish
       if not source $script

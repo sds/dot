@@ -1,8 +1,8 @@
 function load_env
   set env_file $argv[1]
 
-  dot::eval_env_file $env_file | xargs -0 -n1 | while read -l line
+  dot::eval_env_file $env_file | while read line
     set name_and_value (string split --max=1 '=' $line)
-    set -x $name_and_value[1] $name_and_value[2]
-  end
+    set -gx $name_and_value[1] $name_and_value[2]
+  end; or true # Don't fail when output is empty
 end
