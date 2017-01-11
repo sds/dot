@@ -4,5 +4,5 @@
 
 dot::symlink "$HOME/.bashrc" "$DOT_FRAMEWORK_DIR/lib/shells/bash/bashrc"
 dot::symlink "$HOME/.bash_login" "$DOT_FRAMEWORK_DIR/lib/shells/bash/bash_login"
-dot::symlink "$HOME/.bash_profile" "$DOT_FRAMEWORK_DIR/lib/shells/bash/bash_profile"
+dot::symlink "$HOME/.bash_profile" "$DOT_FRAMEWORK_DIR/lib/shells/bash/bash_login"
 dot::symlink "$HOME/.bash_logout" "$DOT_FRAMEWORK_DIR/lib/shells/bash/bash_logout"
