@@ -5,13 +5,15 @@
 #
 # Do not make changes to this file -- use Dot plugins!
 
-if [ ! -L "$0" ]; then
-  echo "ERROR: $0 must be a symlink to lib/shells/bash/bash_login in the Dot framework"
+__file__="$HOME/.bash_login"
+
+if [ ! -L "$__file__" ]; then
+  echo "ERROR: $__file__ must be a symlink to lib/shells/bash/bash_login in the Dot framework"
   echo "ERROR: You should not execute/source this script directly!"
   echo "ERROR: Skipping initialization of Dot"
 else
-  export DOT_FRAMEWORK_DIR="$(cd "$(dirname "$(dirname "$(dirname "$(dirname "$(readlink "$0")")")")")" && pwd)"
-  export DOT_HOME="$(dirname "$(readlink "$DOT_FRAMEWORK_DIR")")"
+  export DOT_FRAMEWORK_DIR="$(cd "$(dirname "$(dirname "$(dirname "$(dirname "$(readlink "$__file__")")")")")" && pwd)"
+  export DOT_HOME="$(dirname "$DOT_FRAMEWORK_DIR")"
 
   export DOT_SHELL=bash
   export DOT_BACKUPS_DIR="$DOT_HOME/.backups"
@@ -23,16 +25,19 @@ else
 
   source "$DOT_FRAMEWORK_DIR/lib/shells/bash/load_env"
 
-  for plugin in $(dot::plugins::dependency_order); do
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
+  # We use globs in many places expecting them to return an empty list rather
+  # than fail if no matches are found
+  shopt -s nullglob
 
+  # Use cached load order created during installation
+  DOT_PLUGINS_DEPENDENCY_ORDER=($(cat "$DOT_HOME/.cache/plugin_load_order"))
+
+  for plugin in ${DOT_PLUGINS_DEPENDENCY_ORDER[@]}; do
     # Define variable so plugin's interactive shell script can use it for convenience
     DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
 
     # Load any environment variables defined in relevant `env` directories
-    for env_path in "$DOT_PLUGIN_DIR/env"{,/setup{,/install}}"/"*(N); do
+    for env_path in "$DOT_PLUGIN_DIR/env/"{,login/}*; do
       if [ -f "$env_path" ]; then
         if ! load_env "$env_path"; then
           echo "ERROR: Failed to load environment variables for plugin $plugin. Halting"
@@ -41,12 +46,16 @@ else
       fi
     done
 
-    for script in "$DOT_PLUGIN_DIR/lib/login/"*".${DOT_SHELL}"; do
+    for script in "$DOT_PLUGIN_DIR/lib/login/"*.bash; do
       if ! source "$script"; then
         echo "ERROR: Problem sourcing login script $script for plugin $plugin"
       fi
     done
   done
+
+  if [ -e "$HOME/.bash_login.local" ]; then
+    source "$HOME/.bash_login.local"
+  fi
 
   # Bash doesn't source bashrc when starting a login shell, even when the
   # shell is interactive. This is odd when compared to other shells, so we

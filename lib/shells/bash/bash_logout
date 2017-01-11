@@ -5,25 +5,25 @@
 #
 # Do not make changes to this file -- use Dot plugins!
 
-if [ ! -L "$0" ]; then
-  echo "ERROR: $0 must be a symlink to lib/shells/bash/bash_logout in the Dot framework"
+__file__="$HOME/.bash_logout"
+
+if [ ! -L "$__file__" ]; then
+  echo "ERROR: $__file__ must be a symlink to lib/shells/bash/bash_logout in the Dot framework"
   echo "ERROR: You should not execute/source this script directly!"
   echo "ERROR: Skipping initialization of Dot"
 else
-  for plugin in $(dot::plugins::dependency_order); do
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
-
-    plugin_dir="$DOT_PLUGINS_DIR/$plugin"
-
+  for plugin in ${DOT_PLUGINS_DEPENDENCY_ORDER[@]}; do
     # Define variable so plugin's interactive shell script can use it for convenience
-    DOT_PLUGIN_DIR="$plugin_dir"
+    DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
 
-    for script in "$plugin_dir/lib/logout/"*".${DOT_SHELL}"; do
+    for script in "$DOT_PLUGIN_DIR/lib/logout/"*.bash; do
       if ! source "$script"; then
         echo "ERROR: Problem sourcing logout script $script for plugin $plugin"
       fi
     done
   done
+
+  if [ -e "$HOME/.bash_logout.local" ]; then
+    source "$HOME/.bash_logout.local"
+  fi
 fi
