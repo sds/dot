@@ -25,8 +25,7 @@ else
 
   source "$DOT_FRAMEWORK_DIR/lib/shells/zsh/load_env"
 
-  # Calculate this once and cache so we don't recalculate for each startup file
-  # (zlogin, zshrc, etc.)
+  # Use cached load order created during installation
   DOT_PLUGINS_DEPENDENCY_ORDER=($(cat "$DOT_HOME/.cache/plugin_load_order"))
 
   for plugin in $DOT_PLUGINS_DEPENDENCY_ORDER; do
@@ -43,7 +42,7 @@ else
       fi
     done
 
-    for script in "$DOT_PLUGIN_DIR/lib/"*".${DOT_SHELL}"(N); do
+    for script in "$DOT_PLUGIN_DIR/lib/"*.zsh(N); do
       if ! source "$script"; then
         echo "ERROR: Problem sourcing script $script for plugin $plugin"
       fi

@@ -16,11 +16,7 @@ else
     # Define variable so plugin's logout shell scripts can use it for convenience
     DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
 
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
-
-    for script in "$DOT_PLUGIN_DIR/lib/logout/"*".${DOT_SHELL}"(N); do
+    for script in "$DOT_PLUGIN_DIR/lib/logout/"*.zsh(N); do
       if ! source "$script"; then
         echo "ERROR: Problem sourcing logout script $script for plugin $plugin"
       fi

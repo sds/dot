@@ -16,10 +16,6 @@ else
     # Define variable so plugin's login shell scripts can use it for convenience
     DOT_PLUGIN_DIR="$DOT_PLUGINS_DIR/$plugin"
 
-    if ! dot::plugin::platform_supported "$plugin"; then
-      continue
-    fi
-
     # Load any environment variables defined in relevant `env` directories
     for env_path in "$DOT_PLUGIN_DIR/env/login/"*(N); do
       if [ -f "$env_path" ]; then
@@ -30,7 +26,7 @@ else
       fi
     done
 
-    for script in "$DOT_PLUGIN_DIR/lib/login/"*".${DOT_SHELL}"(N); do
+    for script in "$DOT_PLUGIN_DIR/lib/login/"*.zsh(N); do
       if ! source "$script"; then
         echo "ERROR: Problem sourcing login script $script for plugin $plugin"
       fi
