@@ -25,6 +25,10 @@ else
 
   source "$DOT_FRAMEWORK_DIR/lib/shells/bash/load_env"
 
+  # We use globs in many places expecting them to return an empty list rather
+  # than fail if no matches are found
+  shopt -s nullglob
+
   # Use cached load order created during installation
   DOT_PLUGINS_DEPENDENCY_ORDER=($(cat "$DOT_HOME/.cache/plugin_load_order"))
 
