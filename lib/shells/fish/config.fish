@@ -17,14 +17,10 @@ set -x PATH $DOT_PATH_DIR $PATH
 # Filter plugins not supported by the current OS
 set plugins
 for plugin in (dot::plugins::dependency_order)
-  if ! dot::plugin::platform_supported
-    continue
-  end
-
   set plugins $plugins $plugin
 
   set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
-  for script in $DOT_PLUGIN_DIR/lib/*.$DOT_SHELL
+  for script in $DOT_PLUGIN_DIR/lib/*.fish
     if ! source $script
       echo "ERROR: Problem sourcing script $script for plugin $plugin_name"
       exit 1
@@ -36,7 +32,7 @@ if status --is-login
   for plugin in $plugins
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
 
-    for script in $DOT_PLUGIN_DIR/lib/login/*.$DOT_SHELL
+    for script in $DOT_PLUGIN_DIR/lib/login/*.fish
       if ! source $script
         echo "ERROR: Problem sourcing login script $script for plugin $plugin"
         exit 1
@@ -49,7 +45,7 @@ if status --is-login
     for plugin in $plugins
       set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
 
-      for script in $DOT_PLUGIN_DIR/lib/logout/*.$DOT_SHELL
+      for script in $DOT_PLUGIN_DIR/lib/logout/*.fish
         if ! source $script
           echo "ERROR: Problem sourcing logout script $script for plugin $plugin"
           exit 1
@@ -63,7 +59,7 @@ if status --is-interactive
   for plugin in $plugins
     set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin_name
 
-    for script in $DOT_PLUGIN_DIR/lib/interactive/*.$DOT_SHELL
+    for script in $DOT_PLUGIN_DIR/lib/interactive/*.fish
       if ! source $script
         echo "ERROR: Problem sourcing interactive script $script for plugin $plugin"
         exit 1
