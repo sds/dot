@@ -82,7 +82,7 @@ end
 
 if status --is-interactive
   for plugin in $plugins
-    set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin_name
+    set DOT_PLUGIN_DIR $DOT_PLUGINS_DIR/$plugin
 
     for env_path in $DOT_PLUGIN_DIR/env/interactive/*
       if [ -f $env_path ]

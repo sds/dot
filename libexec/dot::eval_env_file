@@ -14,4 +14,4 @@ env | sort > "$prev_env_file"
 . "$1" >&2 # Source the file to load defined environment variables
 env | sort > "$new_env_file"
 
-comm -3 "$prev_env_file" "$new_env_file" | sed 's|^[[:blank:]]*||g'
+diff --old-line-format "" --unchanged-line-format "" --new-line-format %L "$prev_env_file" "$new_env_file"
