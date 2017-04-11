@@ -158,7 +158,6 @@ Command                       | Login         | Interactive
 `bash -i`                     |               | ✅
 `bash -li`                    |  ✅            | ✅
 `bash -c "some-command"`      |               |
-`cat my-script | bash`        |               |
 `bash -lc "some-command"`     |  ✅            |
 `bash -ic "some-command"`     |               | ✅
 `bash -lic "some-command"`    |  ✅            | ✅
