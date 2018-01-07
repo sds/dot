@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Recursively find all dependencies of the given list of plugins, returning
+# them in topological order.
+
+dependencies="$(mktemp)"
+independent_plugins="$(mktemp)"
+
+visited=""
+while [ $# -gt 0 ]; do
+  plugin="$1"
+  shift
+
+  if echo "$visited" | tr "\0" "\n" | grep -q "^${plugin}$" >/dev/null 2>&1; then
+    continue # Already visited; can skip
+  fi
+
+  visited="${visited}\0${plugin}"
+
+  if ! dot::plugin::platform_supported "$plugin"; then
+    echo "ERROR: Plugin $plugin is not supported on this platform!"
+    exit 1
+  fi
+
+  plugin_dir="$DOT_PLUGINS_DIR/$plugin"
+
+  if [ -e "$plugin_dir/dependencies" ]; then
+    # Add dependencies to the list of plugins to search
+    set -- "$@" $(cat "$plugin_dir/dependencies")
+    # Add dependencies to list of edges
+    cat "$plugin_dir/dependencies" | xargs -n1 -I{} echo {} "$plugin" >> "$dependencies"
+  else
+    echo "$plugin" >> "$independent_plugins"
+  fi
+done
+
+tsort "$dependencies" | cat - "$independent_plugins" | awk '!x[$0]++' # awk magic to remove duplicate lines without sorting
+rm "$dependencies" "$independent_plugins" >/dev/null 2>&1

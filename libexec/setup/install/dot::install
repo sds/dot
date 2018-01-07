@@ -14,7 +14,7 @@ dot::plugins::dependency_order > "$DOT_HOME/.cache/plugin_load_order"
 
 # Install specific plugins if they are specified
 if [ $# -gt 0 ]; then
-  dot::plugins::install "$@"
+  dot::plugins::install $(dot::plugins::transitive_dependencies "$@")
 else
   # Clear path cache so we clean up any unused executables
   rm -rf "$DOT_PATH_DIR"
