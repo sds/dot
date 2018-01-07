@@ -25,6 +25,5 @@ for plugin_dir in $(find "$DOT_PLUGINS_DIR" -mindepth 1 -maxdepth 1 -type d); do
 done
 
 # Output the dependent plugins sorted topologically, then everything else
-tsort "$dependencies"
-cat "$independent_plugins" | awk '!x[$0]++' # awk magic to remove duplicate lines without sorting
+tsort "$dependencies" | cat - "$independent_plugins" | awk '!x[$0]++' # awk magic to remove duplicate lines without sorting
 rm "$dependencies" "$independent_plugins" >/dev/null 2>&1
