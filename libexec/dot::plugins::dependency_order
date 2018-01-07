@@ -9,7 +9,7 @@ set -o nounset
 dependencies="$(mktemp)"
 independent_plugins="$(mktemp)"
 
-for plugin_dir in $(find "$DOT_PLUGINS_DIR" -maxdepth 1 -type d); do
+for plugin_dir in $(find "$DOT_PLUGINS_DIR" -mindepth 1 -maxdepth 1 -type d); do
   plugin_name="$(basename "$plugin_dir")"
 
   if ! dot::plugin::platform_supported "$plugin_name"; then
