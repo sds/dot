@@ -20,7 +20,7 @@ The easiest way to get started is to clone
 `plugins` directory so you start with a clean slate.
 
 ```bash
-git clone https://github.com/sds/.files ~/.files
+git clone --recurse-submodules https://github.com/sds/.files ~/.files
 cd ~/.files
 rm -rf plugins/*
 bin/install
