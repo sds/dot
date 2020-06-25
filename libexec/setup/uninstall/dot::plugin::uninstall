@@ -8,17 +8,19 @@ set -o nounset
 plugin_name="$1"
 plugin_dir="$DOT_PLUGINS_DIR/$plugin_name"
 
-for uninstall_script_path in "$plugin_dir/setup/"* "$plugin_dir/setup/uninstall/"*; do
-  if [ -f "$uninstall_script_path" ]; then
-    export DOT_PLUGIN_DIR="$plugin_dir"
+for sub_dir in setup setup/uninstall; do
+  for uninstall_script_path in "$plugin_dir/$sub_dir/"*; do
+    if [ -f "$uninstall_script_path" ]; then
+      export DOT_PLUGIN_DIR="$plugin_dir"
 
-    if [ -x "$uninstall_script_path" ]; then
-      "$uninstall_script_path"
-    fi
+      if [ -x "$uninstall_script_path" ]; then
+        "$uninstall_script_path"
+      fi
 
-    if [ ! $? -eq 0 ]; then
-      echo "ERROR: Problem occurred uninstalling $plugin_name"
-      exit 1
+      if [ ! $? -eq 0 ]; then
+        echo "ERROR: Problem occurred uninstalling $plugin_name"
+        exit 1
+      fi
     fi
-  fi
+  done
 done

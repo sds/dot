@@ -12,17 +12,21 @@ for plugin in "$@"; do
 
   # Add anything in `libexec` directories to PATH so they can be executed by
   # this plugin or other plugins during install
-  for libexec_path in "$plugin_dir/libexec" "$plugin_dir/libexec/setup" "$plugin_dir/libexec/setup/uninstall"; do
-    if [ -d "$libexec_path" ]; then
-      export PATH="$libexec_path:$PATH"
-    fi
+  for sub_dir in libexec libexec/setup libexec/setup/uninstall; do
+    for libexec_path in "$plugin_dir/$sub_dir"; do
+      if [ -d "$libexec_path" ]; then
+        export PATH="$libexec_path:$PATH"
+      fi
+    done
   done
 
   # Load any environment variables defined in relevant `env` directories
-  for env_path in "$plugin_dir/env/"* "$plugin_dir/env/setup/"* "$plugin_dir/env/setup/uninstall/"*; do
-    if [ -f "$env_path" ]; then
-      load_env "$env_path"
-    fi
+  for sub_dir in env env/setup env/setup/uninstall; do
+    for env_path in "$plugin_dir/$sub_dir/"*; do
+      if [ -f "$env_path" ]; then
+        load_env "$env_path"
+      fi
+    done
   done
 
   if ! dot::plugin::uninstall "$plugin"; then
